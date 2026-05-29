@@ -8,9 +8,6 @@ pip install -r requirements.txt
 python app.py
 ```
 ```bash
-python test_app.py
-```
-```bash
 python pytest
 ```
 
