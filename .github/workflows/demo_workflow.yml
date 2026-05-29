@@ -15,32 +15,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-   
-    - name: Build
-      run: |
-        python app.py
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t flask-cicd-demo .
+
+      - name: Run application container
+        run: |
+          docker run -d -p 5001:5001 --name flask-test flask-cicd-demo
+          sleep 5
+          curl http://localhost:5001/health
+
+      - name: Stop container
+        run: docker stop flask-test
 
   test:
+
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-          pip install -r requirements.txt
-   
-    - name: Test with pytest
-      run: |
-        pytest
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t flask-cicd-demo . 
+
+      - name: Run tests inside Docker container
+        run: |
+             docker run --name flask-cicd-container -d flask-cicd-demo
+             docker exec flask-cicd-container pytest
     
