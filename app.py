@@ -4,7 +4,7 @@ from flask import jsonify
 app = flask.Flask(__name__)
 @app.route('/')
 def index():
-    return 'API Works!'
+    return jsonify(message="Hello CI/CD with Flask and Docker!")
 
 @app.route("/health")
 def health():
