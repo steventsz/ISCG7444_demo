@@ -1,0 +1,48 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Demo Workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t flask-cicd-demo .
+
+      - name: Run application container
+        run: |
+          docker run -d -p 5001:5001 --name flask-test flask-cicd-demo
+          sleep 5
+          curl http://localhost:5001/health
+
+      - name: Stop container
+        run: docker stop flask-test
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t flask-cicd-demo . 
+
+      - name: Run tests inside Docker container
+        run: |
+             docker run --name flask-cicd-container -d flask-cicd-demo
+             docker exec flask-cicd-container pytest
+    
